@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="vi" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Alconost Video Automation Studio</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: { 500: '#6366f1', 600: '#4f46e5', 700: '#4338ca' },
+            dark: { 800: '#18181b', 850: '#141416', 900: '#09090b', 950: '#040406' }
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-dark-950 text-slate-100 min-h-screen flex flex-col font-sans antialiased selection:bg-brand-500 selection:text-white">
+
+  <!-- TOP NAVIGATION -->
+  <header class="border-b border-zinc-800 bg-dark-900/80 backdrop-blur sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-400 flex items-center justify-center shadow-lg shadow-brand-500/20">
+          <i class="fa-solid fa-film text-white text-lg"></i>
+        </div>
+        <div>
+          <h1 class="text-base font-bold text-white flex items-center gap-2">
+            Alconost Video Auto Studio
+            <span class="text-[10px] uppercase font-semibold px-2 py-0.5 rounded-full bg-brand-500/10 text-brand-400 border border-brand-500/20">Pro</span>
+          </h1>
+          <p class="text-xs text-zinc-400">Tự động hoá tạo video theo Prompt, Tỉ lệ, Ngôn ngữ</p>
+        </div>
+      </div>
+
+      <!-- AUTH & QUICK ACTIONS -->
+      <div class="flex items-center space-x-3">
+        <!-- Google Auth Badge -->
+        <div id="authStatusBadge" class="flex items-center space-x-2 px-3 py-1.5 rounded-lg border border-zinc-700 bg-zinc-800/60 text-xs">
+          <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+          <span class="text-zinc-300 font-medium">Đang kiểm tra đăng nhập...</span>
+        </div>
+
+        <button id="btnOpenLogin" class="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700 transition">
+          <i class="fa-brands fa-google text-red-400"></i>
+          <span>Mở Chrome Đăng Nhập</span>
+        </button>
+
+        <button id="btnOpenFolder" class="flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700 transition" title="Mở thư mục chứa video">
+          <i class="fa-solid fa-folder-open text-amber-400"></i>
+          <span>Thư Mục Video</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN CONTAINER -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 space-y-6">
+
+    <!-- METRICS & QUEUE CONTROLS -->
+    <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+      <div class="bg-dark-900 border border-zinc-800/80 rounded-xl p-4 flex items-center justify-between">
+        <div>
+          <p class="text-xs text-zinc-400 font-medium">Tổng số task</p>
+          <p id="metricTotal" class="text-2xl font-bold text-white mt-1">0</p>
+        </div>
+        <div class="w-10 h-10 rounded-lg bg-zinc-800/80 flex items-center justify-center text-zinc-400">
+          <i class="fa-solid fa-list-check text-lg"></i>
+        </div>
+      </div>
+
+      <div class="bg-dark-900 border border-zinc-800/80 rounded-xl p-4 flex items-center justify-between">
+        <div>
+          <p class="text-xs text-amber-400/90 font-medium">Đang chờ (Queue)</p>
+          <p id="metricPending" class="text-2xl font-bold text-amber-400 mt-1">0</p>
+        </div>
+        <div class="w-10 h-10 rounded-lg bg-amber-500/10 flex items-center justify-center text-amber-400">
+          <i class="fa-solid fa-hourglass-start text-lg"></i>
+        </div>
+      </div>
+
+      <div class="bg-dark-900 border border-zinc-800/80 rounded-xl p-4 flex items-center justify-between">
+        <div>
+          <p class="text-xs text-indigo-400 font-medium">Đang xử lý</p>
+          <p id="metricRunning" class="text-2xl font-bold text-indigo-400 mt-1">0</p>
+        </div>
+        <div class="w-10 h-10 rounded-lg bg-indigo-500/10 flex items-center justify-center text-indigo-400">
+          <i class="fa-solid fa-circle-notch fa-spin text-lg"></i>
+        </div>
+      </div>
+
+      <div class="bg-dark-900 border border-zinc-800/80 rounded-xl p-4 flex items-center justify-between">
+        <div>
+          <p class="text-xs text-emerald-400 font-medium">Đã hoàn thành</p>
+          <p id="metricCompleted" class="text-2xl font-bold text-emerald-400 mt-1">0</p>
+        </div>
+        <div class="w-10 h-10 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-400">
+          <i class="fa-solid fa-circle-check text-lg"></i>
+        </div>
+      </div>
+
+      <div class="bg-dark-900 border border-zinc-800/80 rounded-xl p-4 flex items-center justify-between">
+        <div>
+          <p class="text-xs text-rose-400 font-medium">Thất bại</p>
+          <p id="metricFailed" class="text-2xl font-bold text-rose-400 mt-1">0</p>
+        </div>
+        <div class="w-10 h-10 rounded-lg bg-rose-500/10 flex items-center justify-center text-rose-400">
+          <i class="fa-solid fa-triangle-exclamation text-lg"></i>
+        </div>
+      </div>
+    </div>
+
+    <!-- ACTION TOOLBAR -->
+    <div class="bg-dark-900 border border-zinc-800 rounded-xl p-4 flex flex-wrap items-center justify-between gap-3">
+      <!-- Main Queue Triggers -->
+      <div class="flex items-center space-x-2.5">
+        <button id="btnStartQueue" class="flex items-center space-x-2 px-4 py-2 rounded-lg font-semibold text-sm bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-600/20 transition">
+          <i class="fa-solid fa-play"></i>
+          <span>Bắt Đầu Chạy Queue</span>
+        </button>
+
+        <button id="btnPauseQueue" class="flex items-center space-x-2 px-4 py-2 rounded-lg font-semibold text-sm bg-zinc-800 hover:bg-zinc-700 text-zinc-300 border border-zinc-700 transition">
+          <i class="fa-solid fa-pause"></i>
+          <span>Tạm Dừng</span>
+        </button>
+      </div>
+
+      <!-- Add & Generate Buttons -->
+      <div class="flex flex-wrap items-center gap-2">
+        <button id="btnOpenVariants" class="flex items-center space-x-1.5 px-3 py-2 rounded-lg text-xs font-semibold bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 text-white shadow-md transition">
+          <i class="fa-solid fa-wand-magic-sparkles"></i>
+          <span>Sinh Biến Thể Hàng Loạt</span>
+        </button>
+
+        <button id="btnOpenAddTask" class="flex items-center space-x-1.5 px-3 py-2 rounded-lg text-xs font-semibold bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700 transition">
+          <i class="fa-solid fa-plus"></i>
+          <span>Thêm Task Lẻ</span>
+        </button>
+
+        <!-- Excel Actions -->
+        <input type="file" id="excelFileInput" accept=".xlsx, .xls, .csv" class="hidden">
+        <button id="btnImportExcel" class="flex items-center space-x-1.5 px-3 py-2 rounded-lg text-xs font-semibold bg-zinc-800 hover:bg-zinc-700 text-emerald-400 border border-zinc-700 transition">
+          <i class="fa-solid fa-file-excel"></i>
+          <span>Nhập Excel</span>
+        </button>
+
+        <button id="btnDownloadTemplate" class="flex items-center space-x-1.5 px-3 py-2 rounded-lg text-xs font-semibold bg-zinc-800 hover:bg-zinc-700 text-zinc-300 border border-zinc-700 transition" title="Tải file Excel mẫu">
+          <i class="fa-solid fa-download text-zinc-400"></i>
+          <span>Tải File Mẫu</span>
+        </button>
+
+        <button id="btnExportExcel" class="flex items-center space-x-1.5 px-3 py-2 rounded-lg text-xs font-semibold bg-zinc-800 hover:bg-zinc-700 text-zinc-300 border border-zinc-700 transition">
+          <i class="fa-solid fa-file-export"></i>
+          <span>Xuất Báo Cáo</span>
+        </button>
+
+        <!-- Utility Buttons -->
+        <button id="btnRetryFailed" class="flex items-center space-x-1.5 px-3 py-2 rounded-lg text-xs font-semibold bg-zinc-800 hover:bg-zinc-700 text-amber-400 border border-zinc-700 transition" title="Chạy lại các task bị lỗi">
+          <i class="fa-solid fa-rotate-right"></i>
+          <span>Thử Lại Lỗi</span>
+        </button>
+
+        <button id="btnClearCompleted" class="flex items-center space-x-1.5 px-3 py-2 rounded-lg text-xs font-semibold bg-zinc-800 hover:bg-zinc-700 text-rose-400 border border-zinc-700 transition" title="Xóa các task đã hoàn thành">
+          <i class="fa-solid fa-trash-can"></i>
+          <span>Dọn Hoàn Thành</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- MAIN CONTENT: TASK TABLE & LIVE LOGS -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+      <!-- LEFT: TASK TABLE (2 COLS) -->
+      <div class="lg:col-span-2 space-y-3">
+        <div class="flex items-center justify-between">
+          <h2 class="text-sm font-bold text-white flex items-center gap-2">
+            <i class="fa-solid fa-layer-group text-brand-400"></i>
+            Danh Sách Hàng Đợi (Queue)
+          </h2>
+          <span id="taskCountSummary" class="text-xs text-zinc-400">0 tasks</span>
+        </div>
+
+        <div class="bg-dark-900 border border-zinc-800 rounded-xl overflow-hidden shadow">
+          <div class="overflow-x-auto max-h-[560px] overflow-y-auto">
+            <table class="w-full text-left text-xs border-collapse">
+              <thead class="bg-zinc-800/80 text-zinc-400 uppercase tracking-wider sticky top-0 z-10 text-[10px]">
+                <tr>
+                  <th class="p-3">#</th>
+                  <th class="p-3">Sản phẩm / Title</th>
+                  <th class="p-3">Tỉ lệ</th>
+                  <th class="p-3">Ngôn ngữ</th>
+                  <th class="p-3">Trạng thái</th>
+                  <th class="p-3">Video Output</th>
+                  <th class="p-3 text-right">Thao tác</th>
+                </tr>
+              </thead>
+              <tbody id="taskListBody" class="divide-y divide-zinc-800/60">
+                <tr>
+                  <td colspan="7" class="p-8 text-center text-zinc-500">
+                    <i class="fa-solid fa-inbox text-3xl mb-2 block opacity-40"></i>
+                    Hàng đợi đang trống. Hãy thêm task mới hoặc nhập từ file Excel!
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: LIVE TERMINAL CONSOLE (1 COL) -->
+      <div class="space-y-3 flex flex-col h-full">
+        <div class="flex items-center justify-between">
+          <h2 class="text-sm font-bold text-white flex items-center gap-2">
+            <i class="fa-solid fa-terminal text-emerald-400"></i>
+            Tiến Trình Thực Thi (Live Logs)
+          </h2>
+          <button id="btnClearLogs" class="text-[11px] text-zinc-400 hover:text-zinc-200 transition">
+            <i class="fa-solid fa-broom mr-1"></i>Xóa log
+          </button>
+        </div>
+
+        <div class="flex-1 bg-dark-950 border border-zinc-800 rounded-xl p-3 font-mono text-[11px] flex flex-col h-[560px]">
+          <div id="liveLogsConsole" class="flex-1 overflow-y-auto space-y-1.5 pr-2 select-text">
+            <div class="text-zinc-500">[System] Sẵn sàng nhận lệnh và bắt đầu tự động hoá...</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- MODAL: VARIANT GENERATOR (SINH BIẾN THỂ) -->
+  <div id="modalVariants" class="fixed inset-0 bg-black/70 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+    <div class="bg-dark-900 border border-zinc-700 rounded-2xl max-w-xl w-full p-6 space-y-5 shadow-2xl">
+      <div class="flex items-center justify-between border-b border-zinc-800 pb-3">
+        <div class="flex items-center space-x-2">
+          <div class="w-8 h-8 rounded-lg bg-brand-500/20 text-brand-400 flex items-center justify-center">
+            <i class="fa-solid fa-wand-magic-sparkles text-sm"></i>
+          </div>
+          <h3 class="text-base font-bold text-white">Sinh Biến Thể Prompt Hàng Loạt</h3>
+        </div>
+        <button class="modal-close text-zinc-400 hover:text-white text-lg">&times;</button>
+      </div>
+
+      <div class="space-y-4 text-xs">
+        <div>
+          <label class="block text-zinc-300 font-medium mb-1">Tên Sản Phẩm / Dự Án</label>
+          <input type="text" id="varTitle" placeholder="Ví dụ: Nourii Meal Planner App" class="w-full bg-zinc-800/80 border border-zinc-700 rounded-lg p-2.5 text-white focus:outline-none focus:border-brand-500">
+        </div>
+
+        <div>
+          <label class="block text-zinc-300 font-medium mb-1">URL Website / App Store / Landing Page</label>
+          <input type="text" id="varUrl" placeholder="https://ainourii.com hoặc link app" class="w-full bg-zinc-800/80 border border-zinc-700 rounded-lg p-2.5 text-white focus:outline-none focus:border-brand-500">
+        </div>
+
+        <div>
+          <label class="block text-zinc-300 font-medium mb-1">Yêu cầu / Prompt cốt lõi</label>
+          <textarea id="varPrompt" rows="3" placeholder="Nhập mô tả kịch bản, điểm bán hàng chính, tông giọng..." class="w-full bg-zinc-800/80 border border-zinc-700 rounded-lg p-2.5 text-white focus:outline-none focus:border-brand-500"></textarea>
+        </div>
+
+        <!-- Video Aspect Ratios Multi-Select -->
+        <div>
+          <label class="block text-zinc-300 font-medium mb-1.5">Chọn các tỉ lệ video muốn tạo:</label>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            <label class="flex items-center space-x-2 p-2 bg-zinc-800/50 rounded-lg border border-zinc-700/60 cursor-pointer hover:border-brand-500">
+              <input type="checkbox" name="varRatio" value="9:16" checked class="accent-brand-500">
+              <span class="text-zinc-200 font-medium">9:16 (Reels/TikTok)</span>
+            </label>
+            <label class="flex items-center space-x-2 p-2 bg-zinc-800/50 rounded-lg border border-zinc-700/60 cursor-pointer hover:border-brand-500">
+              <input type="checkbox" name="varRatio" value="16:9" class="accent-brand-500">
+              <span class="text-zinc-200 font-medium">16:9 (YouTube)</span>
+            </label>
+            <label class="flex items-center space-x-2 p-2 bg-zinc-800/50 rounded-lg border border-zinc-700/60 cursor-pointer hover:border-brand-500">
+              <input type="checkbox" name="varRatio" value="1:1" class="accent-brand-500">
+              <span class="text-zinc-200 font-medium">1:1 (Square)</span>
+            </label>
+            <label class="flex items-center space-x-2 p-2 bg-zinc-800/50 rounded-lg border border-zinc-700/60 cursor-pointer hover:border-brand-500">
+              <input type="checkbox" name="varRatio" value="4:5" class="accent-brand-500">
+              <span class="text-zinc-200 font-medium">4:5 (Instagram)</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Languages Multi-Select -->
+        <div>
+          <label class="block text-zinc-300 font-medium mb-1.5">Chọn các ngôn ngữ muốn tạo:</label>
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+            <label class="flex items-center space-x-2 p-2 bg-zinc-800/50 rounded-lg border border-zinc-700/60 cursor-pointer hover:border-brand-500">
+              <input type="checkbox" name="varLang" value="English" checked class="accent-brand-500">
+              <span class="text-zinc-200">English (Tiếng Anh)</span>
+            </label>
+            <label class="flex items-center space-x-2 p-2 bg-zinc-800/50 rounded-lg border border-zinc-700/60 cursor-pointer hover:border-brand-500">
+              <input type="checkbox" name="varLang" value="Vietnamese" checked class="accent-brand-500">
+              <span class="text-zinc-200">Tiếng Việt</span>
+            </label>
+            <label class="flex items-center space-x-2 p-2 bg-zinc-800/50 rounded-lg border border-zinc-700/60 cursor-pointer hover:border-brand-500">
+              <input type="checkbox" name="varLang" value="Japanese" class="accent-brand-500">
+              <span class="text-zinc-200">Japanese (Tiếng Nhật)</span>
+            </label>
+            <label class="flex items-center space-x-2 p-2 bg-zinc-800/50 rounded-lg border border-zinc-700/60 cursor-pointer hover:border-brand-500">
+              <input type="checkbox" name="varLang" value="Korean" class="accent-brand-500">
+              <span class="text-zinc-200">Korean (Tiếng Hàn)</span>
+            </label>
+            <label class="flex items-center space-x-2 p-2 bg-zinc-800/50 rounded-lg border border-zinc-700/60 cursor-pointer hover:border-brand-500">
+              <input type="checkbox" name="varLang" value="French" class="accent-brand-500">
+              <span class="text-zinc-200">French (Tiếng Pháp)</span>
+            </label>
+            <label class="flex items-center space-x-2 p-2 bg-zinc-800/50 rounded-lg border border-zinc-700/60 cursor-pointer hover:border-brand-500">
+              <input type="checkbox" name="varLang" value="Spanish" class="accent-brand-500">
+              <span class="text-zinc-200">Spanish (Tây Ban Nha)</span>
+            </label>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-zinc-400 text-[11px] mb-1">Session URL cụ thể (để trống để tự động tạo session mới):</label>
+          <input type="text" id="varSessionUrl" placeholder="https://studio.alconost.com/s/phamg2944-XXXX/" class="w-full bg-zinc-800/80 border border-zinc-700 rounded-lg p-2 text-white focus:outline-none">
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end space-x-3 pt-3 border-t border-zinc-800">
+        <button class="modal-close px-4 py-2 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 text-xs font-semibold">Hủy</button>
+        <button id="btnSubmitVariants" class="px-5 py-2 rounded-lg bg-brand-600 hover:bg-brand-500 text-white text-xs font-semibold shadow-lg shadow-brand-500/20">
+          Sinh Biến Thể & Thêm Vào Queue
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: ADD SINGLE TASK -->
+  <div id="modalAddTask" class="fixed inset-0 bg-black/70 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+    <div class="bg-dark-900 border border-zinc-700 rounded-2xl max-w-lg w-full p-6 space-y-4 shadow-2xl text-xs">
+      <div class="flex items-center justify-between border-b border-zinc-800 pb-3">
+        <h3 class="text-base font-bold text-white flex items-center gap-2">
+          <i class="fa-solid fa-plus text-brand-400"></i>
+          Thêm Task Đơn Lẻ
+        </h3>
+        <button class="modal-close text-zinc-400 hover:text-white text-lg">&times;</button>
+      </div>
+
+      <div class="space-y-3">
+        <div>
+          <label class="block text-zinc-300 font-medium mb-1">Tên Video / Sản Phẩm</label>
+          <input type="text" id="singleTitle" placeholder="Ví dụ: GardenVibe App Video" class="w-full bg-zinc-800 border border-zinc-700 rounded-lg p-2.5 text-white">
+        </div>
+        <div>
+          <label class="block text-zinc-300 font-medium mb-1">URL Sản Phẩm</label>
+          <input type="text" id="singleUrl" placeholder="https://..." class="w-full bg-zinc-800 border border-zinc-700 rounded-lg p-2.5 text-white">
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-zinc-300 font-medium mb-1">Tỉ Lệ Video</label>
+            <select id="singleRatio" class="w-full bg-zinc-800 border border-zinc-700 rounded-lg p-2.5 text-white">
+              <option value="9:16">9:16 (Vertical Reels/TikTok)</option>
+              <option value="16:9">16:9 (Landscape YouTube)</option>
+              <option value="1:1">1:1 (Square)</option>
+              <option value="4:5">4:5 (Instagram)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-zinc-300 font-medium mb-1">Ngôn Ngữ</label>
+            <select id="singleLang" class="w-full bg-zinc-800 border border-zinc-700 rounded-lg p-2.5 text-white">
+              <option value="English">English</option>
+              <option value="Vietnamese">Vietnamese</option>
+              <option value="Japanese">Japanese</option>
+              <option value="Korean">Korean</option>
+              <option value="French">French</option>
+              <option value="Spanish">Spanish</option>
+            </select>
+          </div>
+        </div>
+        <div>
+          <label class="block text-zinc-300 font-medium mb-1">Prompt / Yêu cầu chi tiết</label>
+          <textarea id="singlePrompt" rows="3" placeholder="Nhập prompt cụ thể..." class="w-full bg-zinc-800 border border-zinc-700 rounded-lg p-2.5 text-white"></textarea>
+        </div>
+        <div>
+          <label class="block text-zinc-400 text-[11px] mb-1">Session URL (tùy chọn):</label>
+          <input type="text" id="singleSessionUrl" placeholder="Để trống nếu muốn tạo mới" class="w-full bg-zinc-800 border border-zinc-700 rounded-lg p-2 text-white">
+        </div>
+      </div>
+
+      <div class="flex items-center justify-end space-x-3 pt-3 border-t border-zinc-800">
+        <button class="modal-close px-4 py-2 rounded-lg bg-zinc-800 text-zinc-300 font-semibold">Hủy</button>
+        <button id="btnSubmitSingle" class="px-5 py-2 rounded-lg bg-brand-600 hover:bg-brand-500 text-white font-semibold">Thêm Vào Queue</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: TASK DETAIL & VIDEO PLAYER -->
+  <div id="modalDetail" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+    <div class="bg-dark-900 border border-zinc-700 rounded-2xl max-w-2xl w-full p-6 space-y-4 shadow-2xl text-xs max-h-[90vh] overflow-y-auto">
+      <div class="flex items-center justify-between border-b border-zinc-800 pb-3">
+        <h3 id="detailTitle" class="text-base font-bold text-white">Chi Tiết Task</h3>
+        <button class="modal-close text-zinc-400 hover:text-white text-lg">&times;</button>
+      </div>
+
+      <div class="space-y-4">
+        <!-- Video Player if available -->
+        <div id="detailVideoContainer" class="hidden bg-black rounded-xl overflow-hidden flex items-center justify-center border border-zinc-800">
+          <video id="detailVideoPlayer" controls class="max-h-[360px] w-auto mx-auto"></video>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3 bg-zinc-800/40 p-3 rounded-xl border border-zinc-800">
+          <div><span class="text-zinc-400">Trạng thái:</span> <span id="detailStatus" class="font-bold ml-1"></span></div>
+          <div><span class="text-zinc-400">Tỉ lệ:</span> <span id="detailRatio" class="text-zinc-200 ml-1"></span></div>
+          <div><span class="text-zinc-400">Ngôn ngữ:</span> <span id="detailLang" class="text-zinc-200 ml-1"></span></div>
+          <div><span class="text-zinc-400">File:</span> <span id="detailFile" class="text-zinc-200 ml-1 truncate"></span></div>
+        </div>
+
+        <div>
+          <label class="block text-zinc-400 font-medium mb-1">Prompt đã gửi:</label>
+          <div id="detailPrompt" class="p-3 bg-zinc-800/60 rounded-xl text-zinc-200 whitespace-pre-wrap select-text font-mono text-[11px]"></div>
+        </div>
+
+        <div>
+          <label class="block text-zinc-400 font-medium mb-1">Kịch bản / Phản hồi từ AI:</label>
+          <div id="detailAiResponse" class="p-3 bg-zinc-800/60 rounded-xl text-zinc-200 whitespace-pre-wrap select-text font-mono text-[11px] max-h-48 overflow-y-auto"></div>
+        </div>
+
+        <div id="detailErrorContainer" class="hidden p-3 bg-rose-500/10 border border-rose-500/20 rounded-xl text-rose-300">
+          <label class="block font-bold mb-1">Lỗi:</label>
+          <div id="detailError"></div>
+        </div>
+      </div>
+
+      <div class="flex items-center justify-between pt-3 border-t border-zinc-800">
+        <a id="detailDownloadBtn" href="#" target="_blank" download class="hidden px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-semibold flex items-center gap-1.5">
+          <i class="fa-solid fa-download"></i> Tải Video MP4
+        </a>
+        <button class="modal-close ml-auto px-4 py-2 rounded-lg bg-zinc-800 text-zinc-300 font-semibold">Đóng</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
+

@@ -1,0 +1,23 @@
+{
+  "name": "tool_crawl_alconost",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.20.0",
+    "cors": "^2.8.6",
+    "dotenv": "^18.0.7",
+    "express": "^5.3.0",
+    "multer": "^2.4.0",
+    "playwright": "^1.64.0",
+    "ws": "^8.22.0",
+    "xlsx": "^0.18.5"
+  }
+}

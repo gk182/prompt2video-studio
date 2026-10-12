@@ -1,0 +1,60 @@
+[
+  {
+    "id": "task_1791770920109_lbg6p",
+    "title": "LikeFlow [16:9 - English]",
+    "url": "likeflow.ai",
+    "prompt": "",
+    "language": "English",
+    "aspectRatio": "16:9",
+    "sessionUrl": "https://studio.alconost.com/s/phamg2944-90JMVKFQMDkZ/",
+    "status": "failed",
+    "createdAt": "2026-10-12T02:08:40.109Z",
+    "startedAt": "2026-10-12T02:09:12.606Z",
+    "finalPrompt": "Create an engaging video for: likeflow.ai\nRequirements & Key selling points: \nVideo Aspect Ratio: 16:9\nLanguage: English",
+    "error": "page.waitForTimeout: Target page, context or browser has been closed"
+  },
+  {
+    "id": "task_1791770920111_vwqd3",
+    "title": "LikeFlow [4:5 - English]",
+    "url": "likeflow.ai",
+    "prompt": "",
+    "language": "English",
+    "aspectRatio": "4:5",
+    "sessionUrl": "",
+    "status": "pending",
+    "createdAt": "2026-10-12T02:08:40.111Z"
+  },
+  {
+    "id": "task_1791770947561_8m62f",
+    "title": "LikeFlow [9:16 - English]",
+    "url": "likeflow.ai",
+    "prompt": "",
+    "language": "English",
+    "aspectRatio": "9:16",
+    "sessionUrl": "https://studio.alconost.com/s/phamg2944-90JMVKFQMDkZ/",
+    "status": "pending",
+    "createdAt": "2026-10-12T02:09:07.561Z"
+  },
+  {
+    "id": "task_1791770947562_a6xfv",
+    "title": "LikeFlow [16:9 - English]",
+    "url": "likeflow.ai",
+    "prompt": "",
+    "language": "English",
+    "aspectRatio": "16:9",
+    "sessionUrl": "https://studio.alconost.com/s/phamg2944-90JMVKFQMDkZ/",
+    "status": "pending",
+    "createdAt": "2026-10-12T02:09:07.562Z"
+  },
+  {
+    "id": "task_1791770947564_5p8rh",
+    "title": "LikeFlow [4:5 - English]",
+    "url": "likeflow.ai",
+    "prompt": "",
+    "language": "English",
+    "aspectRatio": "4:5",
+    "sessionUrl": "https://studio.alconost.com/s/phamg2944-90JMVKFQMDkZ/",
+    "status": "pending",
+    "createdAt": "2026-10-12T02:09:07.564Z"
+  }
+]

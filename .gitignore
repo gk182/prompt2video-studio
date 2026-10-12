@@ -1,0 +1,37 @@
+# Dependencies
+node_modules/
+package-lock.json
+
+# Browser user data & profiles (contains private Google login session & cookies)
+chrome_user_data/
+.playwright/
+
+# Video outputs & downloads
+output/videos/*
+!output/videos/.gitkeep
+
+# Temporary data, logs & uploads
+data/uploads/
+data/*.xlsx
+*.log
+
+# Environment variables & local configs
+.env
+.env.local
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+
+# IDE & Editor files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
